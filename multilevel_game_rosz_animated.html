@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Spacedraft Multi-Level Game — Animated By Rosz</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{margin:0;font-family:Arial;background:#0a0f24;color:#fff;padding:20px;}
+.card{background:#11182f;padding:20px;border-radius:12px;max-width:700px;margin:auto;border:1px solid #2a335c;}
+h1,h2{color:#ffd166}
+button{padding:10px 14px;border-radius:8px;border:none;background:#ffd166;color:#000;font-weight:bold;cursor:pointer;margin-top:10px;}
+.hidden{display:none}
+input{padding:10px;border-radius:6px;border:none;width:100%;margin-top:10px;}
+#confetti{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+</style>
+</head>
+<body>
+
+<canvas id="confetti"></canvas>
+
+<div id="level1" class="card">
+<h1>Level 1 — Riddle</h1>
+<p>I speak without a mouth and hear without ears. What am I?</p>
+<input id="answer1" placeholder="Type your answer">
+<button onclick="check1()">Submit</button>
+<p id="msg1"></p>
+</div>
+
+<div id="level2" class="card hidden">
+<h1>Level 2 — Math Puzzle</h1>
+<p>Solve: 12 + 8 × 2 = ?</p>
+<input id="answer2" placeholder="Type your answer">
+<button onclick="check2()">Submit</button>
+<p id="msg2"></p>
+</div>
+
+<div id="level3" class="card hidden">
+<h1>Level 3 — Unscramble</h1>
+<p>Unscramble this word: <b>YAD</b></p>
+<input id="answer3" placeholder="Your word">
+<button onclick="check3()">Submit</button>
+<p id="msg3"></p>
+</div>
+
+<div id="final" class="card hidden">
+<h1>🎉 Congratulations!</h1>
+<h2>Happy Men's Day — From Rosz</h2>
+<p>You completed all levels. Wishing you strength, success and happiness!</p>
+</div>
+
+<script>
+// CONFETTI ANIMATION
+const canvas = document.getElementById("confetti");
+const ctx = canvas.getContext("2d");
+let pieces = [];
+let numberOfPieces = 120;
+
+function resize(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+window.onresize = resize;
+resize();
+
+function initConfetti(){
+  pieces = [];
+  for(let i = 0; i < numberOfPieces; i++){
+    pieces.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height - canvas.height,
+      size: Math.random()*10 + 5,
+      speed: Math.random()*3 + 1,
+      color: "hsl(" + Math.random()*360 + ",100%,50%)",
+      tilt: Math.random()*10 - 5
+    });
+  }
+}
+
+function update(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  pieces.forEach((p,i)=>{
+    p.y += p.speed;
+    p.x += Math.sin(p.y / 20);
+    p.tilt += 0.1;
+    ctx.beginPath();
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+    if(p.y > canvas.height){
+      pieces[i] = {
+        x: Math.random()*canvas.width,
+        y: -20,
+        size: Math.random()*10 + 5,
+        speed: Math.random()*3 + 1,
+        color: "hsl(" + Math.random()*360 + ",100%,50%)",
+        tilt: Math.random()*10 - 5
+      };
+    }
+  });
+  requestAnimationFrame(update);
+}
+
+function startConfetti(){
+  initConfetti();
+  update();
+}
+
+// LEVEL CHECKERS
+function check1(){
+ let a=document.getElementById('answer1').value.toLowerCase();
+ if(a.includes("echo")){
+   startConfetti();
+   setTimeout(()=>{ 
+     document.getElementById('level1').classList.add("hidden");
+     document.getElementById('level2').classList.remove("hidden");
+   },1200);
+ } else document.getElementById('msg1').innerText="❌ Try again!";
+}
+
+function check2(){
+ let a=document.getElementById('answer2').value;
+ if(a==="28"){
+   startConfetti();
+   setTimeout(()=>{
+     document.getElementById('level2').classList.add("hidden");
+     document.getElementById('level3').classList.remove("hidden");
+   },1200);
+ } else document.getElementById('msg2').innerText="❌ Wrong!";
+}
+
+function check3(){
+ let a=document.getElementById('answer3').value.toLowerCase();
+ if(a==="day"){
+   startConfetti();
+   setTimeout(()=>{
+     document.getElementById('level3').classList.add("hidden");
+     document.getElementById('final').classList.remove("hidden");
+   },1200);
+ } else document.getElementById('msg3').innerText="❌ Incorrect!";
+}
+</script>
+
+</body>
+</html>
